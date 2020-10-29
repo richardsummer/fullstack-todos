@@ -30,10 +30,22 @@ class App extends Component {
     super(props);
     this.state = {
       todos: [],
-      input: ''
+      text: ''
     }
 
     this.toggleCompletion = this.toggleCompletion.bind(this);
+    this.handleChange = this.handleChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  handleSubmit() {
+    // save new todo to database
+
+    // take the todo that got created and add it to state in the App component (the todos value)
+  }
+
+  handleChange(event) {
+
   }
 
   componentDidMount() {
@@ -46,14 +58,23 @@ class App extends Component {
     const todos = [...this.state.todos];
     const index = todos.indexOf(todo);
 
-    todos[index].is_complete = !todos[index].is_complete
+    todo.is_complete = !todo.is_complete;
+    todos[index] = todo;
 
-    this.setState({todos});
+    this.setState({todos}, () => console.log(this.state.todos));
 
-    const id = todo.id;
-    fetch('api/v1/todos/')
-    .then(response => response.json())
-    .then(data => this.setState({todos: data}));
+
+    const options = {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(todo),
+    }
+
+    fetch(`api/v1/todos/${todo.id}/`, options)
+      .then(response => response.json())
+      .then(data => console.log(data));
 
   }
 
@@ -66,6 +87,11 @@ class App extends Component {
     );
     return (
       <div className="App">
+        <form onSubmit={this.handleSubmit}>
+          <label htmlFor='text'>Text</label>
+          <input id="text" type="text" name="text" value={this.state.text} onChange={this.handleChange}/>
+          <button type="submit">Add todo</button>
+        </form>
         <h1>Hello</h1>
         <ul>{todos}</ul>
       </div>
