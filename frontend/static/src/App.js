@@ -38,14 +38,27 @@ class App extends Component {
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
-  handleSubmit() {
-    // save new todo to database
+  handleSubmit(event) {
+    event.preventDefault();
+    const options = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({text: this.state.text}),
+    }
 
-    // take the todo that got created and add it to state in the App component (the todos value)
+    fetch(`api/v1/todos/new/`, options)
+      // save new todo to database
+      .then(response => response.json())
+      // take the todo that got created and add it to state in the App component (the todos value)
+      .then(data => this.setState({todos: [data, ...this.state.todos], text: ''}));
+
+
   }
 
   handleChange(event) {
-
+    this.setState({[event.target.name]: event.target.value});
   }
 
   componentDidMount() {
@@ -92,7 +105,7 @@ class App extends Component {
           <input id="text" type="text" name="text" value={this.state.text} onChange={this.handleChange}/>
           <button type="submit">Add todo</button>
         </form>
-        <h1>Hello</h1>
+        <h1>Todo List</h1>
         <ul>{todos}</ul>
       </div>
     );
